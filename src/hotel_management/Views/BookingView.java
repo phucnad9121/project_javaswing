@@ -49,31 +49,45 @@ public class BookingView extends JFrame {
         setSize(1400, 700);
         setLocationRelativeTo(null);
         
+        Font buttonFont = new Font("Arial", Font.PLAIN, 14);
+        
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         
         JButton btnConfirm = new JButton("Xác nhận & Gán phòng");
         btnConfirm.setForeground(Color.BLACK);
+        btnConfirm.setFont(buttonFont); 
         
         JButton btnCheckIn = new JButton("Check-in");
         btnCheckIn.setForeground(Color.BLACK);
+        btnCheckIn.setFont(buttonFont); 
         
         JButton btnManageServices = new JButton("Quản lý Dịch vụ");
         btnManageServices.setForeground(Color.BLACK);
+        btnManageServices.setFont(buttonFont); 
         
         JButton btnCancel = new JButton("Hủy booking");
         btnCancel.setForeground(Color.BLACK);
+        btnCancel.setFont(buttonFont); 
         
-        JButton btnDelete = new JButton("Xóa vĩnh viễn");
-        btnDelete.setForeground(Color.BLACK);
+        JButton btnExport = new JButton("Xuất Excel");
+        btnExport.setForeground(Color.BLACK);
+        btnExport.setFont(buttonFont);
+        
+        
+//        JButton btnDelete = new JButton("Xóa vĩnh viễn");
+//        btnDelete.setForeground(Color.BLACK);
+//        btnDelete.setFont(buttonFont); 
         
         // Thêm ô tìm kiếm
         txtSearch = new JTextField(20);
         txtSearch.setToolTipText("Tìm theo tên khách hàng, số phòng, hoặc mã booking");
         JButton btnSearch = new JButton("Tìm kiếm");
         btnSearch.setForeground(Color.BLACK);
+        btnSearch.setFont(new Font("Arial", Font.PLAIN, 14));
         
-        JButton btnRefresh = new JButton("Làm mới");
-        btnRefresh.setForeground(Color.BLACK);
+//        JButton btnRefresh = new JButton("Làm mới");
+//        btnRefresh.setForeground(Color.BLACK);
+//        btnRefresh.setFont(new Font("Arial", Font.PLAIN, 14));
         
         // Checkbox ẩn booking đã hoàn thành/hủy
         chkHideCompleted = new JCheckBox("Ẩn booking đã hoàn thành/hủy");
@@ -84,23 +98,25 @@ public class BookingView extends JFrame {
         btnCheckIn.addActionListener(e -> checkIn());
         btnManageServices.addActionListener(e -> manageServices());
         btnCancel.addActionListener(e -> cancelBooking());
-        btnDelete.addActionListener(e -> deleteBooking());
+        btnExport.addActionListener(e -> exportToExcel());
+//        btnDelete.addActionListener(e -> deleteBooking());
         btnSearch.addActionListener(e -> searchBooking());
-        btnRefresh.addActionListener(e -> {
-            txtSearch.setText("");
-            loadData();
-        });
+//        btnRefresh.addActionListener(e -> {
+//            txtSearch.setText("");
+//            loadData();
+//        });
         
         buttonPanel.add(btnConfirm);
         buttonPanel.add(btnCheckIn);
         buttonPanel.add(btnManageServices);
         buttonPanel.add(btnCancel);
-        buttonPanel.add(btnDelete);
+//        buttonPanel.add(btnDelete);
+        buttonPanel.add(btnExport);
         buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
         buttonPanel.add(new JLabel("Tìm kiếm:"));
         buttonPanel.add(txtSearch);
         buttonPanel.add(btnSearch);
-        buttonPanel.add(btnRefresh);
+//        buttonPanel.add(btnRefresh);
         buttonPanel.add(chkHideCompleted);
         
         String[] columns = {"Mã", "Khách hàng", "Loại phòng", "Phòng đã gán", 
@@ -112,9 +128,13 @@ public class BookingView extends JFrame {
             }
         };
         table = new JTable(tableModel);
+        table.setFont(new Font("Arial", Font.PLAIN, 14)); 
+        table.setRowHeight(30);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         
         JScrollPane scrollPane = new JScrollPane(table);
+        
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 15));
         
         add(buttonPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -173,8 +193,8 @@ public class BookingView extends JFrame {
     private void searchBooking() {
         String keyword = txtSearch.getText().trim().toLowerCase();
         if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!");
-            return;
+            loadData(); 
+            return;     
         }
         
         tableModel.setRowCount(0);
@@ -417,6 +437,63 @@ public class BookingView extends JFrame {
                     "Lỗi khi xóa booking!",
                     "Lỗi",
                     JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void exportToExcel() {
+        // 1. Cho phép người dùng chọn nơi lưu file
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            java.io.File fileToSave = fileChooser.getSelectedFile();
+            // Tự động thêm đuôi .csv nếu người dùng quên
+            String filePath = fileToSave.getAbsolutePath();
+            if (!filePath.toLowerCase().endsWith(".csv")) {
+                filePath += ".csv";
+            }
+
+            try (java.io.BufferedWriter bw = new java.io.BufferedWriter(
+                    new java.io.OutputStreamWriter(
+                    new java.io.FileOutputStream(filePath), "UTF-8"))) { // Dùng UTF-8 để không lỗi font tiếng Việt
+
+                // Thêm BOM để Excel nhận diện đúng tiếng Việt (quan trọng)
+                bw.write("\ufeff");
+
+                // 2. Viết tiêu đề cột
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    bw.write(tableModel.getColumnName(i));
+                    if (i < tableModel.getColumnCount() - 1) {
+                        bw.write(","); // Ngăn cách bằng dấu phẩy
+                    }
+                }
+                bw.newLine(); // Xuống dòng
+
+                // 3. Viết dữ liệu từng dòng
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                        String value = tableModel.getValueAt(i, j).toString();
+
+                        // Xử lý nếu dữ liệu có dấu phẩy (thay bằng chấm phẩy hoặc bao quanh bằng ngoặc kép)
+                        // Ví dụ: "Ghi chú, có dấu phẩy" -> "Ghi chú; có dấu phẩy"
+                        value = value.replace(",", ";"); 
+                        value = value.replace("\n", " "); // Xóa xuống dòng nếu có
+
+                        bw.write(value);
+                        if (j < tableModel.getColumnCount() - 1) {
+                            bw.write(",");
+                        }
+                    }
+                    bw.newLine();
+                }
+
+                JOptionPane.showMessageDialog(this, "Xuất file thành công!\n" + filePath);
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi xuất file: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

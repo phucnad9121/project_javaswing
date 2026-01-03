@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package hotel_management.Views;
 
-/**
- *
- * @author phucd
- */
 import hotel_management.Controllers.AdminController;
 import hotel_management.Controllers.LoginController;
 import hotel_management.Controllers.GuestController;
@@ -26,6 +18,11 @@ public class LoginView extends JFrame {
     private JComboBox<String> cmbUserType;
     private JButton btnLogin, btnRegister, btnExit;
     
+    // Khai báo các Font đã tăng thêm 1 đơn vị
+    private Font fontPlain = new Font("Arial", Font.PLAIN, 14); // Gốc thường là 13
+    private Font fontBold = new Font("Arial", Font.BOLD, 14);
+    private Font fontTitle = new Font("Arial", Font.BOLD, 21); // Gốc là 20
+    
     public LoginView() {
         adminController = new AdminController();
         loginController = new LoginController();
@@ -35,85 +32,102 @@ public class LoginView extends JFrame {
     
     private void initComponents() {
         setTitle("Đăng nhập - Hệ thống Quản lý Khách sạn");
-        setSize(450, 400);
+        setSize(600, 550); // Tăng nhẹ kích thước cửa sổ để chữ to không bị chật
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setBackground(new Color(245, 245, 245)); // Màu nền xám nhạt cho sang trọng
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         
+        // --- Tiêu đề ---
         JLabel lblTitle = new JLabel("HỆ THỐNG QUẢN LÝ KHÁCH SẠN");
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
-        lblTitle.setHorizontalAlignment(JLabel.CENTER);
+        lblTitle.setFont(fontTitle);
+        lblTitle.setForeground(new Color(0, 51, 102)); // Màu xanh đậm
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 0, 30, 0); // Khoảng cách dưới tiêu đề
+        gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(lblTitle, gbc);
         
+        // --- Thiết lập chung cho các Label và Input ---
         gbc.gridwidth = 1;
-        gbc.gridy = 1;
-        mainPanel.add(new JLabel("Loại tài khoản:"), gbc);
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        // Loại tài khoản
+        gbc.gridx = 0; gbc.gridy = 1;
+        JLabel lblType = new JLabel("Loại tài khoản:");
+        lblType.setFont(fontBold);
+        mainPanel.add(lblType, gbc);
         
         gbc.gridx = 1;
         cmbUserType = new JComboBox<>(new String[]{"Khách hàng", "Nhân viên", "Quản trị viên"});
-        cmbUserType.addActionListener(e -> updateLoginLabel());
+        cmbUserType.setFont(fontPlain);
+        cmbUserType.setPreferredSize(new Dimension(200, 35)); // Tăng chiều cao ô nhập
         mainPanel.add(cmbUserType, gbc);
         
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        mainPanel.add(new JLabel("Tên đăng nhập:"), gbc);
+        // Tên đăng nhập
+        gbc.gridx = 0; gbc.gridy = 2;
+        JLabel lblUser = new JLabel("Tên đăng nhập:");
+        lblUser.setFont(fontBold);
+        mainPanel.add(lblUser, gbc);
         
         gbc.gridx = 1;
         txtUsername = new JTextField(20);
+        txtUsername.setFont(fontPlain);
+        txtUsername.setPreferredSize(new Dimension(200, 35));
         mainPanel.add(txtUsername, gbc);
         
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        mainPanel.add(new JLabel("Mật khẩu:"), gbc);
+        // Mật khẩu
+        gbc.gridx = 0; gbc.gridy = 3;
+        JLabel lblPass = new JLabel("Mật khẩu:");
+        lblPass.setFont(fontBold);
+        mainPanel.add(lblPass, gbc);
         
         gbc.gridx = 1;
         txtPassword = new JPasswordField(20);
+        txtPassword.setFont(fontPlain);
+        txtPassword.setPreferredSize(new Dimension(200, 35));
         mainPanel.add(txtPassword, gbc);
         
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        // --- Panel Nút bấm ---
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 20));
+        buttonPanel.setOpaque(false); // Để lộ màu nền mainPanel
+        
         btnLogin = new JButton("Đăng nhập");
-        btnLogin.setForeground(Color.BLACK);
-        
-        btnRegister = new JButton("Đăng ký Khách hàng");
-        btnRegister.setForeground(Color.BLACK);
-        
+        btnRegister = new JButton("Đăng ký");
         btnExit = new JButton("Thoát");
-        btnExit.setForeground(Color.BLACK);
         
-        btnLogin.addActionListener(e -> login());
-        btnRegister.addActionListener(e -> openRegisterForm());
-        btnExit.addActionListener(e -> System.exit(0));
+        // Áp dụng font và kích thước cho nút
+        JButton[] buttons = {btnLogin, btnRegister, btnExit};
+        for (JButton btn : buttons) {
+            btn.setFont(fontBold);
+            btn.setPreferredSize(new Dimension(130, 40));
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            buttonPanel.add(btn);
+        }
         
-        buttonPanel.add(btnLogin);
-        buttonPanel.add(btnRegister);
-        buttonPanel.add(btnExit);
+        btnLogin.setBackground(new Color(0, 123, 255));
+        btnLogin.setForeground(Color.BLACK); 
         
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 0, 0, 0);
         mainPanel.add(buttonPanel, gbc);
         
-        // Thêm ghi chú cho khách hàng
-        JLabel lblNote = new JLabel("<html><i>Khách hàng: Dùng số điện thoại để đăng nhập</i></html>");
-        lblNote.setFont(new Font("Arial", Font.PLAIN, 11));
-        lblNote.setForeground(Color.GRAY);
-        gbc.gridy = 5;
-        mainPanel.add(lblNote, gbc);
+        // Sự kiện
+        btnLogin.addActionListener(e -> login());
+        btnRegister.addActionListener(e -> openRegisterForm());
+        btnExit.addActionListener(e -> System.exit(0));
         
         add(mainPanel);
     }
     
-    private void updateLoginLabel() {
-        // Có thể thêm hint cho từng loại tài khoản
-    }
+    // ... (Các hàm login(), openRegisterForm() giữ nguyên logic cũ của bạn)
     
     private void openRegisterForm() {
         new GuestRegisterView().setVisible(true);
@@ -130,7 +144,6 @@ public class LoginView extends JFrame {
         }
         
         if (userType.equals("Quản trị viên")) {
-            // Admin login
             Admin admin = adminController.adminLogin(username, password);
             if (admin != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập Admin thành công!");
@@ -140,7 +153,6 @@ public class LoginView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu!");
             }
         } else if (userType.equals("Nhân viên")) {
-            // Employee login
             Login login = loginController.employeeLogin(username, password);
             if (login != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!\nChào mừng " + 
@@ -151,7 +163,6 @@ public class LoginView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu!");
             }
         } else {
-            // Guest login - Dùng số điện thoại
             Guest guest = guestController.login(username, password);
             if (guest != null) {
                 JOptionPane.showMessageDialog(this, "Đăng nhập thành công!\nChào mừng " + 
@@ -163,8 +174,13 @@ public class LoginView extends JFrame {
             }
         }
     }
-    
+
     public static void main(String[] args) {
+        // Cài đặt giao diện giống hệ điều hành (Look and Feel)
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {}
+        
         SwingUtilities.invokeLater(() -> {
             new LoginView().setVisible(true);
         });

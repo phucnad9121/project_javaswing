@@ -43,4 +43,21 @@ public class GuestController {
     public Guest getGuestById(int maKhachHang) {
         return guestDAO.getGuestById(maKhachHang);
     }
+    
+    public boolean updateGuest(int maKhachHang, String ho, String ten, String email, 
+                              String sdt, String cmnd, String diaChi) {
+        Guest guest = new Guest();
+        guest.setMaKhachHang(maKhachHang);
+        guest.setHoKhachHang(ho);   // Set Họ
+        guest.setTenKhachHang(ten); // Set Tên
+        guest.setEmailKhachHang(email);
+        guest.setSoDienThoaiKhachHang(sdt);
+        guest.setCmndCccdKhachHang(cmnd);
+        guest.setDiaChi(diaChi);
+        return guestDAO.updateGuest(guest);
+    }
+
+    public boolean deleteGuest(int maKhachHang) {
+        return guestDAO.deleteGuest(maKhachHang);
+    }
 }

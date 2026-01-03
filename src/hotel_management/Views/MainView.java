@@ -64,7 +64,7 @@ public class MainView extends JFrame {
             menuPanel.add(createMenuButton("Quản lý Khách hàng", e -> new GuestView().setVisible(true)));
             menuPanel.add(createMenuButton("Quản lý Đặt phòng", e -> new BookingView(getCurrentEmployeeId()).setVisible(true)));
             menuPanel.add(createMenuButton("Thanh toán & Trả phòng", e -> new CheckoutView().setVisible(true)));
-            menuPanel.add(createMenuButton("Báo cáo & Thống kê", e -> showComingSoon()));
+            menuPanel.add(createMenuButton("Báo cáo & Thống kê", e -> new StatisticalReportView().setVisible(true)));
         } else {
             // Menu cho Employee
             menuPanel.add(createMenuButton("Quản lý Đặt phòng", e -> new BookingView(getCurrentEmployeeId()).setVisible(true)));

@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package hotel_management.Views;
 
-/**
- *
- * @author phucd
- */
 import hotel_management.Controllers.RoomController;
 import hotel_management.Controllers.RoomTypeController;
 import hotel_management.Models.Room;
@@ -16,6 +8,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors; // Import thư viện để dùng Filter
 
 public class RoomView extends JFrame {
     private RoomController roomController;
@@ -23,6 +16,10 @@ public class RoomView extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
     private JTextField txtSoPhong;
+    
+    // 1. Thêm biến cho chức năng Tìm kiếm
+    private JTextField txtSearch; 
+    
     private JComboBox<String> cmbLoaiPhong, cmbKhaDung;
     private List<RoomType> roomTypes;
     
@@ -35,9 +32,10 @@ public class RoomView extends JFrame {
     
     private void initComponents() {
         setTitle("Quản lý Phòng");
-        setSize(900, 600);
+        setSize(900, 650); // Tăng chiều cao một chút để chứa thanh tìm kiếm
         setLocationRelativeTo(null);
         
+        // --- PANEL NHẬP LIỆU (Giữ nguyên) ---
         JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Thông tin Phòng"));
         
@@ -54,6 +52,7 @@ public class RoomView extends JFrame {
         cmbKhaDung = new JComboBox<>(new String[]{"Yes", "No"});
         inputPanel.add(cmbKhaDung);
         
+        // --- PANEL NÚT BẤM (Cập nhật nút Làm mới để reset tìm kiếm) ---
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton btnAdd = new JButton("Thêm");
         JButton btnUpdate = new JButton("Sửa");
@@ -63,7 +62,12 @@ public class RoomView extends JFrame {
         btnAdd.addActionListener(e -> addRoom());
         btnUpdate.addActionListener(e -> updateRoom());
         btnDelete.addActionListener(e -> deleteRoom());
-        btnRefresh.addActionListener(e -> loadData());
+        // Khi làm mới: Xóa trắng ô tìm kiếm và tải lại toàn bộ dữ liệu
+        btnRefresh.addActionListener(e -> { 
+            txtSearch.setText(""); 
+            loadData(); 
+            clearFields(); 
+        });
         
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnUpdate);
@@ -71,6 +75,19 @@ public class RoomView extends JFrame {
         buttonPanel.add(btnRefresh);
         inputPanel.add(buttonPanel);
         
+        // --- 2. PANEL TÌM KIẾM (Mới thêm) ---
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+        searchPanel.add(new JLabel("Tìm kiếm (Số phòng/Loại): "));
+        
+        txtSearch = new JTextField(20);
+        searchPanel.add(txtSearch);
+        
+        JButton btnSearch = new JButton("Tìm");
+        btnSearch.addActionListener(e -> searchRoom()); // Gọi hàm tìm kiếm
+        searchPanel.add(btnSearch);
+
+        // --- BẢNG DỮ LIỆU ---
         String[] columns = {"Mã", "Số phòng", "Loại phòng", "Trạng thái"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
@@ -85,10 +102,51 @@ public class RoomView extends JFrame {
             }
         });
         
+        // --- BỐ CỤC TỔNG THỂ ---
+        // Tạo một Panel chứa cả Thanh tìm kiếm và Bảng để đặt vào vùng CENTER
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(searchPanel, BorderLayout.NORTH); // Tìm kiếm nằm trên
+        centerPanel.add(new JScrollPane(table), BorderLayout.CENTER); // Bảng nằm dưới
+
         add(inputPanel, BorderLayout.NORTH);
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER); // Thay thế dòng add(scrollPane) cũ
     }
     
+    // --- CÁC HÀM XỬ LÝ (LOGIC) ---
+
+    // 3. Hàm hiển thị danh sách (Tách ra để dùng chung cho loadData và searchRoom)
+    private void displayData(List<Room> list) {
+        tableModel.setRowCount(0);
+        for (Room room : list) {
+            String statusDisplay = room.getKhaDung().equals("Yes") ? "Có sẵn" : "Không có";
+            tableModel.addRow(new Object[]{
+                room.getMaPhong(), room.getSoPhong(), room.getTenLoaiPhong(), statusDisplay
+            });
+        }
+    }
+
+    // 4. Hàm Tìm kiếm (Giống hệt EmployeeView)
+    private void searchRoom() {
+        String keyword = txtSearch.getText().trim().toLowerCase();
+        if (keyword.isEmpty()) {
+            loadData(); // Nếu ô tìm kiếm trống thì hiện tất cả
+            return;
+        }
+
+        List<Room> allRooms = roomController.getAllRooms();
+        // Lọc dữ liệu bằng Stream
+        List<Room> filteredList = allRooms.stream()
+            .filter(r -> r.getSoPhong().toLowerCase().contains(keyword) || 
+                         r.getTenLoaiPhong().toLowerCase().contains(keyword))
+            .collect(Collectors.toList());
+
+        displayData(filteredList);
+        
+        if (filteredList.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy phòng nào phù hợp!");
+        }
+    }
+
     private void loadRoomTypes() {
         roomTypes = roomTypeController.getAllRoomTypes();
         cmbLoaiPhong.removeAllItems();
@@ -97,15 +155,10 @@ public class RoomView extends JFrame {
         }
     }
     
+    // Cập nhật hàm loadData để gọi displayData
     private void loadData() {
-        tableModel.setRowCount(0);
         List<Room> list = roomController.getAllRooms();
-        for (Room room : list) {
-            String statusDisplay = room.getKhaDung().equals("Yes") ? "Có sẵn" : "Không có";
-            tableModel.addRow(new Object[]{
-                room.getMaPhong(), room.getSoPhong(), room.getTenLoaiPhong(), statusDisplay
-            });
-        }
+        displayData(list);
     }
     
     private void addRoom() {

@@ -68,7 +68,7 @@ public class EmployeeDAO {
                 emp.setNgayVaoLam(rs.getDate("NgayVaoLam"));
                 emp.setDiaChi(rs.getString("DiaChi"));
                 emp.setMaBoPhan(rs.getInt("MaBoPhan"));
-                emp.setTenBoPhan(rs.getString("TenBoPhan"));
+emp.setTenBoPhan(rs.getString("TenBoPhan"));
                 emp.setCmndCccd(rs.getString("CMND_CCCD"));
                 return emp;
             }
@@ -142,4 +142,41 @@ public class EmployeeDAO {
             return false;
         }
     }
+public List<Employee> searchEmployees(String keyword) {
+    List<Employee> list = new ArrayList<>();
+    // Tìm kiếm theo Mã (số) hoặc Tên, Họ (chuỗi)
+    String sql = "SELECT e.*, d.TenBoPhan FROM hotels_employees e " +
+                "LEFT JOIN hotels_departments d ON e.MaBoPhan = d.MaBoPhan " +
+                "WHERE e.MaNhanVien LIKE ? OR e.TenNhanVien LIKE ? OR e.HoNhanVien LIKE ? " +
+                "ORDER BY e.MaNhanVien";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        String searchKey = "%" + keyword + "%";
+        pstmt.setString(1, searchKey);
+        pstmt.setString(2, searchKey);
+        pstmt.setString(3, searchKey);
+        
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            Employee emp = new Employee();
+            emp.setMaNhanVien(rs.getInt("MaNhanVien"));
+            emp.setTenNhanVien(rs.getString("TenNhanVien"));
+            emp.setHoNhanVien(rs.getString("HoNhanVien"));
+            emp.setChucDanhNV(rs.getString("ChucDanhNV"));
+            emp.setSoDienThoaiNV(rs.getString("SoDienThoaiNV"));
+            emp.setEmailNhanVien(rs.getString("EmailNhanVien"));
+            emp.setNgayVaoLam(rs.getDate("NgayVaoLam"));
+            emp.setDiaChi(rs.getString("DiaChi"));
+            emp.setMaBoPhan(rs.getInt("MaBoPhan"));
+            emp.setTenBoPhan(rs.getString("TenBoPhan"));
+            emp.setCmndCccd(rs.getString("CMND_CCCD"));
+            list.add(emp);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
 }

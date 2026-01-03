@@ -141,4 +141,41 @@ public class GuestDAO {
             return false;
         }
     }
+    
+    public boolean updateGuest(Guest guest) {
+        // Cập nhật cả HoKhachHang và TenKhachHang
+        String sql = "UPDATE hotels_guests SET HoKhachHang=?, TenKhachHang=?, EmailKhachHang=?, " +
+                    "SoDienThoaiKhachHang=?, CMND_CCCDKhachHang=?, DiaChi=? " +
+                    "WHERE MaKhachHang=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, guest.getHoKhachHang());  // Cột Họ
+            pstmt.setString(2, guest.getTenKhachHang()); // Cột Tên
+            pstmt.setString(3, guest.getEmailKhachHang());
+            pstmt.setString(4, guest.getSoDienThoaiKhachHang());
+            pstmt.setString(5, guest.getCmndCccdKhachHang());
+            pstmt.setString(6, guest.getDiaChi());
+            pstmt.setInt(7, guest.getMaKhachHang());
+
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteGuest(int maKhachHang) {
+        String sql = "DELETE FROM hotels_guests WHERE MaKhachHang=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, maKhachHang);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            // Lỗi này thường do khách hàng đã có booking nên không xóa được
+            System.err.println("Không thể xóa khách hàng ID " + maKhachHang + ": " + e.getMessage());
+            return false;
+        }
+    }
 }
