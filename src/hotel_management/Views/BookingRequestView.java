@@ -139,7 +139,7 @@ public class BookingRequestView extends JFrame {
             "• Yêu cầu đặt phòng sẽ được gửi đến lễ tân.\n" +
             "• Lễ tân sẽ liên hệ xác nhận và gán phòng cụ thể.\n" +
             "• Vui lòng chú ý điện thoại để nhận thông báo.\n" +
-            "• ⚠️ Nếu hết phòng, yêu cầu sẽ bị từ chối.");
+            "• Nếu hết phòng, yêu cầu sẽ bị từ chối.");
         txtInfo.setEditable(false);
         txtInfo.setBackground(new Color(236, 240, 241));
         txtInfo.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -152,14 +152,12 @@ public class BookingRequestView extends JFrame {
         
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         JButton btnSubmit = new JButton("Gửi yêu cầu đặt phòng");
-        btnSubmit.setBackground(new Color(46, 204, 113));
-        btnSubmit.setForeground(Color.WHITE);
+        btnSubmit.setForeground(Color.BLACK);
         btnSubmit.setFont(new Font("Arial", Font.BOLD, 14));
         btnSubmit.setFocusPainted(false);
         
         JButton btnCancel = new JButton("Hủy");
-        btnCancel.setBackground(new Color(149, 165, 166));
-        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setForeground(Color.BLACK);
         btnCancel.setFocusPainted(false);
         
         btnSubmit.addActionListener(e -> submitBooking());
@@ -291,7 +289,7 @@ public class BookingRequestView extends JFrame {
                 soTienDatPhong, currentGuest.getMaKhachHang(), roomTypeId, notes)) {
 
                 JOptionPane.showMessageDialog(this,
-                    "✓ Gửi yêu cầu đặt phòng thành công!\n\n" +
+                    "GỬI YÊU CẦU ĐẶT PHÒNG THÀNH CÔNG!\n\n" +
                     "Thông tin booking:\n" +
                     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
                     "Loại phòng: " + selectedType.getTenLoaiPhong() + "\n" +
@@ -299,8 +297,8 @@ public class BookingRequestView extends JFrame {
                     "Thời gian: " + days + " đêm\n" +
                     "Giá ước tính: " + String.format("%,d VNĐ", soTienDatPhong) + "\n" +
                     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
-                    "📞 Lễ tân sẽ liên hệ với bạn để xác nhận.\n" +
-                    "⚠️ Vui lòng chú ý điện thoại!",
+                    "Lễ tân sẽ liên hệ với bạn để xác nhận.\n" +
+                    "Vui lòng chú ý điện thoại!",
                     "Thành công",
                     JOptionPane.INFORMATION_MESSAGE);
 

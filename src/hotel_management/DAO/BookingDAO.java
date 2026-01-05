@@ -222,9 +222,6 @@ public class BookingDAO {
             pstmt2.setInt(1, maDatPhong);
             pstmt2.executeUpdate();
 
-            // ✅ KHÔNG CẬP NHẬT PHÒNG NỮA (đã cập nhật từ lúc confirm)
-            // Phòng đã bị khóa từ khi nhân viên xác nhận và gán phòng
-
             conn.commit();
             return true;
         } catch (SQLException e) {
@@ -305,44 +302,6 @@ public class BookingDAO {
         }
     }
     
-    public boolean deleteBooking(int maDatPhong) {
-        Connection conn = null;
-        try {
-            conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            // Xóa các dịch vụ đã sử dụng
-            String sqlServices = "DELETE FROM hotelservice_servicesused WHERE MaDatPhong=?";
-            PreparedStatement pstmt1 = conn.prepareStatement(sqlServices);
-            pstmt1.setInt(1, maDatPhong);
-            pstmt1.executeUpdate();
-
-            // Xóa các phòng đã đặt
-            String sqlRooms = "DELETE FROM rooms_roombooked WHERE MaDatPhong=?";
-            PreparedStatement pstmt2 = conn.prepareStatement(sqlRooms);
-            pstmt2.setInt(1, maDatPhong);
-            pstmt2.executeUpdate();
-
-            // Xóa booking
-            String sqlBooking = "DELETE FROM bookings_booking WHERE MaDatPhong=?";
-            PreparedStatement pstmt3 = conn.prepareStatement(sqlBooking);
-            pstmt3.setInt(1, maDatPhong);
-            pstmt3.executeUpdate();
-
-            conn.commit();
-            return true;
-        } catch (SQLException e) {
-            if (conn != null) {
-                try { conn.rollback(); } catch (SQLException ex) {}
-            }
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (conn != null) {
-                try { conn.setAutoCommit(true); } catch (SQLException e) {}
-            }
-        }
-    }
     
     public boolean checkout(int maDatPhong, int soTienThanhToan) {
         Connection conn = null;

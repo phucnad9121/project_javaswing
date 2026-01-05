@@ -29,7 +29,6 @@ public class GuestView extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // --- 1. PANEL NHẬP LIỆU ---
         JPanel inputPanel = new JPanel(new GridLayout(3, 4, 10, 10)); 
         inputPanel.setBorder(BorderFactory.createTitledBorder("Thông tin chi tiết"));
         
@@ -50,7 +49,6 @@ public class GuestView extends JFrame {
         
         inputPanel.add(new JLabel("")); inputPanel.add(new JLabel("")); 
 
-        // Panel nút bấm
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton btnUpdate = new JButton("Sửa");
         JButton btnDelete = new JButton("Xóa");
@@ -66,7 +64,6 @@ public class GuestView extends JFrame {
         topContainer.add(buttonPanel, BorderLayout.SOUTH);
         add(topContainer, BorderLayout.NORTH);
 
-        // --- 2. PANEL TÌM KIẾM & CÔNG CỤ ---
         JPanel toolsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         toolsPanel.add(new JLabel("Tìm kiếm:"));
         txtSearch = new JTextField(20);
@@ -76,21 +73,19 @@ public class GuestView extends JFrame {
         JButton btnRefresh = new JButton("Làm mới");
         JButton btnExport = new JButton("Xuất Excel");
         
-        btnSearch.addActionListener(e -> searchGuest());
-        
+        btnSearch.addActionListener(e -> searchGuest());   
         btnRefresh.addActionListener(e -> {
             txtSearch.setText("");
             loadData();
             clearFields();
         });
-        
         btnExport.addActionListener(e -> exportToExcel());
         
         toolsPanel.add(btnSearch);
         toolsPanel.add(btnRefresh);
         toolsPanel.add(btnExport);
 
-        // --- 3. BẢNG DỮ LIỆU ---
+        // 3. BẢNG DỮ LIỆU 
         String[] columns = {"Mã KH", "Họ và Tên", "SĐT", "CMND/CCCD", "Email", "Địa chỉ", "Trạng thái", "Ngày đăng ký"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -100,7 +95,7 @@ public class GuestView extends JFrame {
         table.setRowHeight(25);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
         
-        // Sự kiện click vào bảng
+        // gõ vào bảng hiển thi dlieu
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
                 int row = table.getSelectedRow();
@@ -116,13 +111,7 @@ public class GuestView extends JFrame {
             }
         });
         
-        // Click vùng trống
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (table.rowAtPoint(e.getPoint()) == -1) clearFields();
-            }
-        });
+
 
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(toolsPanel, BorderLayout.NORTH);
@@ -130,7 +119,7 @@ public class GuestView extends JFrame {
         add(centerPanel, BorderLayout.CENTER);
     }
     
-    // --- CÁC HÀM LOGIC ---
+    // CÁC HÀM LOGIC
 
     private void loadData() {
         tableModel.setRowCount(0);
@@ -138,9 +127,7 @@ public class GuestView extends JFrame {
         for (Guest g : list) {
             String trangThaiDisplay = g.getTrangThai().equals("Reserved") ? "Đang đặt phòng" : "Không đặt phòng";
             
-            // --- SỬA Ở ĐÂY: Gộp Họ + Tên ---
             String fullName = g.getHoKhachHang() + " " + g.getTenKhachHang();
-            // -------------------------------
 
             tableModel.addRow(new Object[]{
                 g.getMaKhachHang(), 
@@ -234,7 +221,7 @@ public class GuestView extends JFrame {
                 g.getCmndCccdKhachHang().contains(keyword) ||
                 fullName.contains(keyword)) { 
                 
-                String trangThaiDisplay = g.getTrangThai().equals("Reserved") ? "Đang đặt phòng" : "Trống";
+                String trangThaiDisplay = g.getTrangThai().equals("Reserved") ? "Đang đặt phòng" : "Không đặt phòng";
                 tableModel.addRow(new Object[]{
                     g.getMaKhachHang(), 
                     g.getHoKhachHang() + " " + g.getTenKhachHang(), // Hiển thị gộp
@@ -254,10 +241,7 @@ public class GuestView extends JFrame {
     }
 
     private void exportToExcel() {
-        // ... (Giữ nguyên hàm exportToExcel ở câu trả lời trước, nó vẫn chạy tốt với model này)
-        // Lưu ý: Cột 1 bây giờ là "Họ và Tên" nên xuất ra Excel cũng sẽ tự động là Họ và Tên.
-        // Copy lại hàm exportToExcel từ câu trả lời trước vào đây nhé.
-         JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Chọn nơi lưu danh sách");
         int userSelection = fileChooser.showSaveDialog(this);
 

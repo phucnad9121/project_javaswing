@@ -74,20 +74,12 @@ public class BookingView extends JFrame {
         btnExport.setFont(buttonFont);
         
         
-//        JButton btnDelete = new JButton("Xóa vĩnh viễn");
-//        btnDelete.setForeground(Color.BLACK);
-//        btnDelete.setFont(buttonFont); 
-        
         // Thêm ô tìm kiếm
         txtSearch = new JTextField(20);
         txtSearch.setToolTipText("Tìm theo tên khách hàng, số phòng, hoặc mã booking");
         JButton btnSearch = new JButton("Tìm kiếm");
         btnSearch.setForeground(Color.BLACK);
-        btnSearch.setFont(new Font("Arial", Font.PLAIN, 14));
-        
-//        JButton btnRefresh = new JButton("Làm mới");
-//        btnRefresh.setForeground(Color.BLACK);
-//        btnRefresh.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnSearch.setFont(buttonFont);
         
         // Checkbox ẩn booking đã hoàn thành/hủy
         chkHideCompleted = new JCheckBox("Ẩn booking đã hoàn thành/hủy");
@@ -99,24 +91,17 @@ public class BookingView extends JFrame {
         btnManageServices.addActionListener(e -> manageServices());
         btnCancel.addActionListener(e -> cancelBooking());
         btnExport.addActionListener(e -> exportToExcel());
-//        btnDelete.addActionListener(e -> deleteBooking());
         btnSearch.addActionListener(e -> searchBooking());
-//        btnRefresh.addActionListener(e -> {
-//            txtSearch.setText("");
-//            loadData();
-//        });
         
         buttonPanel.add(btnConfirm);
         buttonPanel.add(btnCheckIn);
         buttonPanel.add(btnManageServices);
         buttonPanel.add(btnCancel);
-//        buttonPanel.add(btnDelete);
         buttonPanel.add(btnExport);
         buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
         buttonPanel.add(new JLabel("Tìm kiếm:"));
         buttonPanel.add(txtSearch);
         buttonPanel.add(btnSearch);
-//        buttonPanel.add(btnRefresh);
         buttonPanel.add(chkHideCompleted);
         
         String[] columns = {"Mã", "Khách hàng", "Loại phòng", "Phòng đã gán", 
@@ -397,49 +382,6 @@ public class BookingView extends JFrame {
         }
     }
     
-    private void deleteBooking() {
-        int row = table.getSelectedRow();
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn booking cần xóa!");
-            return;
-        }
-        
-        String status = table.getValueAt(row, 8).toString();
-        if (!status.contains("Đã hủy")) {
-            JOptionPane.showMessageDialog(this, 
-                "Chỉ có thể xóa vĩnh viễn các booking đã hủy!\n" +
-                "Vui lòng hủy booking trước khi xóa.");
-            return;
-        }
-        
-        int maDatPhong = (int) tableModel.getValueAt(row, 0);
-        String guestName = tableModel.getValueAt(row, 1).toString();
-        
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "️CẢNH BÁO: Xóa vĩnh viễn booking!\n\n" +
-            "Booking #" + maDatPhong + " của khách " + guestName + "\n" +
-            "sẽ bị XÓA HOÀN TOÀN khỏi hệ thống.\n\n" +
-            "Hành động này KHÔNG THỂ HOÀN TÁC!\n" +
-            "Bạn có chắc chắn muốn tiếp tục?",
-            "Xác nhận xóa vĩnh viễn", 
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.ERROR_MESSAGE);
-        
-        if (confirm == JOptionPane.YES_OPTION) {
-            if (bookingController.deleteBooking(maDatPhong)) {
-                JOptionPane.showMessageDialog(this, 
-                    "Đã xóa booking hoàn toàn khỏi hệ thống!",
-                    "Thành công",
-                    JOptionPane.INFORMATION_MESSAGE);
-                loadData();
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Lỗi khi xóa booking!",
-                    "Lỗi",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
     
     private void exportToExcel() {
         // 1. Cho phép người dùng chọn nơi lưu file

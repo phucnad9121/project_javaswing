@@ -56,9 +56,7 @@ public class BookingController {
         return bookingDAO.cancelBooking(maDatPhong);
     }
     
-    public boolean deleteBooking(int maDatPhong) {
-        return bookingDAO.deleteBooking(maDatPhong);
-    }
+
     
     public boolean checkout(int maDatPhong, int soTienThanhToan) {
         return bookingDAO.checkout(maDatPhong, soTienThanhToan);
