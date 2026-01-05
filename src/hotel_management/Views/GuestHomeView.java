@@ -175,16 +175,7 @@ public class GuestHomeView extends JFrame {
     }
     
     private void viewServices() {
-        JOptionPane.showMessageDialog(this, 
-            "Dịch vụ có sẵn:\n\n" +
-            "• Giặt ủi: 50,000 VNĐ\n" +
-            "• Ăn sáng buffet: 100,000 VNĐ\n" +
-            "• Spa massage: 500,000 VNĐ\n" +
-            "• Đưa đón sân bay: 300,000 VNĐ\n" +
-            "• Minibar: 150,000 VNĐ\n\n" +
-            "Các dịch vụ sẽ được thêm vào hóa đơn khi bạn sử dụng.",
-            "Dịch vụ khách sạn",
-            JOptionPane.INFORMATION_MESSAGE);
+        new ServiceHotelView(currentGuest).setVisible(true);
     }
     
     private void updateProfile() {

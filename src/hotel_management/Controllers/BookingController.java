@@ -43,6 +43,9 @@ public class BookingController {
     public Booking getBookingById(int maDatPhong) {
         return bookingDAO.getBookingById(maDatPhong);
     }
+     public int getLatestBookingId(int maKhachHang) {
+        return bookingDAO.getLatestBookingIdByGuest(maKhachHang);
+    }
     
     public boolean confirmBooking(int maDatPhong, int maNhanVien) {
         return bookingDAO.confirmBooking(maDatPhong, maNhanVien);

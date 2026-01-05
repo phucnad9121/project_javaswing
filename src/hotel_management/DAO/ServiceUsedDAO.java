@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package hotel_management.DAO;
 
-/**
- *
- * @author phucd
- */
 import hotel_management.Models.ServiceUsed;
 import java.sql.*;
 import java.util.ArrayList;

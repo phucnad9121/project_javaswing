@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package hotel_management.DAO;
 
-/**
- *
- * @author phucd
- */
 import hotel_management.Models.Service;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +9,7 @@ public class ServiceDAO {
     
     public List<Service> getAllServices() {
         List<Service> list = new ArrayList<>();
-        String sql = "SELECT * FROM hotelservice_services ORDER BY MaDichVu";
+        String sql = "SELECT * FROM hotelservice_services";
         
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -35,6 +27,29 @@ public class ServiceDAO {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    public Service getServiceById(int maDichVu) {
+        String sql = "SELECT * FROM hotelservice_services WHERE MaDichVu = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, maDichVu);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                Service service = new Service();
+                service.setMaDichVu(rs.getInt("MaDichVu"));
+                service.setTenDichVu(rs.getString("TenDichVu"));
+                service.setMoTaDichVu(rs.getString("MoTaDichVu"));
+                service.setChiPhiDichVu(rs.getInt("ChiPhiDichVu"));
+                return service;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     public boolean addService(Service service) {
@@ -55,7 +70,7 @@ public class ServiceDAO {
     }
     
     public boolean updateService(Service service) {
-        String sql = "UPDATE hotelservice_services SET TenDichVu=?, MoTaDichVu=?, ChiPhiDichVu=? WHERE MaDichVu=?";
+        String sql = "UPDATE hotelservice_services SET TenDichVu = ?, MoTaDichVu = ?, ChiPhiDichVu = ? WHERE MaDichVu = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -73,7 +88,7 @@ public class ServiceDAO {
     }
     
     public boolean deleteService(int maDichVu) {
-        String sql = "DELETE FROM hotelservice_services WHERE MaDichVu=?";
+        String sql = "DELETE FROM hotelservice_services WHERE MaDichVu = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

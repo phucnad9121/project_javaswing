@@ -344,6 +344,27 @@ public class BookingDAO {
             }
         }
     }
-    
+     public int getLatestBookingIdByGuest(int maKhachHang) {
+    String sql = "SELECT MaDatPhong " +
+                 "FROM bookings_booking " +
+                 "WHERE MaKhachHang = ? " +
+                 "AND TrangThai IN ('Pending', 'Confirmed', 'Checkin') " +
+                 "ORDER BY NgayTao DESC " +
+                 "LIMIT 1";
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, maKhachHang);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            return rs.getInt("MaDatPhong");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return -1;
+}
     
 }
